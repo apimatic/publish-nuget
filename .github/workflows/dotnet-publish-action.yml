@@ -2,11 +2,11 @@ name: Dotnet Package Publishing
 
 on: workflow_dispatch
 
+permissions: read-all|write-all
+
 jobs:
   dotnet-sdk-publish:
     runs-on: ubuntu-latest
-    
-    permissions: read-all|write-all
     
     env:
       api-key: hePvp4tDl-HP0IBVGI650qHJ0EDCTuGWt49Qcv7yqkwsKpspojKfhSbtkK3eT_xJ
