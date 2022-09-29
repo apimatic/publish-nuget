@@ -19,15 +19,26 @@ jobs:
 
     - name: parse-generation-json
       run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
+      
+    - id: set_var
+      run: |
+        content=`cat generation.json`
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        echo "::set-output name=packageJson::$content"
+    - run: |
+        echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
 
-    - name: Download Sdk
-      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/$api-entity-id/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk"
+#     - name: Download Sdk
+#       run: curl -L -X GET "https://www.apimatic.io/api/api-entities/$api-entity-id/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk"
     
-    - name: List files
-      run: ls
+#     - name: List files
+#       run: ls
 
-    - name: Check zip
-      run: sudo cat generation.json
+#     - name: Check zip
+#       run: sudo cat generation.json
 
-    - name: Unzip Sdk
-      run: unzip dotnet-sdk
+#     - name: Unzip Sdk
+#       run: unzip dotnet-sdk
+      
