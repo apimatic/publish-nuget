@@ -2,8 +2,6 @@ name: Dotnet Package Publishing
 
 on: workflow_dispatch
 
-permissions: read-all
-
 jobs:
   dotnet-sdk-publish:
     runs-on: ubuntu-latest
@@ -23,7 +21,7 @@ jobs:
       run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
 
     - name: Download Sdk
-      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/$api-entity-id/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk" -o dotnet-sdk.zip
+      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/$api-entity-id/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk"
     
     - name: List files
       run: ls
