@@ -24,6 +24,6 @@ jobs:
       run: curl -L -X GET "https://www.apimatic.io/api/api-entities/$api-entity-id/code-generations/${{ steps.parse_output.outputs.codegenId }}/generated-sdk" -o dotnet-sdk.zip
 
     - name: Unzip Sdk
-      run: unzip dotnet-sdk -d dotnet-sdk
+      run: unzip dotnet-sdk.zip
 
     
