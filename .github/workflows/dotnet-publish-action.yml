@@ -26,5 +26,8 @@ jobs:
     - name: List files
       run: ls
 
+    - name: Check zip
+      run: cat generation.json
+
     - name: Unzip Sdk
-      run: unzip dotnet-sdk.zip
+      run: unzip dotnet-sdk
