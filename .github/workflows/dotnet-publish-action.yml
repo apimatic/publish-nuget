@@ -8,7 +8,7 @@ jobs:
 
     env:
       api-key: YXBpbWF0aWNfNjMzMjkxZTkzMjY0NDcxYzYyY2RhYWFk
-      api-entity-id: hePvp4tDl-HP0IBVGI650qHJ0EDCTuGWt49Qcv7yqkwsKpspojKfhSbtkK3eT_xJ
+      api-entity-id: 63342ed6951d069cae2a18d9
 
     steps:
     - name: Install jq
