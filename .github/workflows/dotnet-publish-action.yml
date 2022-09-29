@@ -27,4 +27,4 @@ jobs:
       run: ls
 
     - name: Unzip Sdk
-      run: unzip dotnet-sdk
+      run: unzip dotnet-sdk.zip
