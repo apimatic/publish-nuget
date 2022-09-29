@@ -2,6 +2,8 @@ name: Dotnet Package Publishing
 
 on: workflow_dispatch
 
+permissions: read_all
+
 jobs:
   dotnet-sdk-publish:
     runs-on: ubuntu-latest
