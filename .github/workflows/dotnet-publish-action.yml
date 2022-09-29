@@ -5,7 +5,9 @@ on: workflow_dispatch
 jobs:
   dotnet-sdk-publish:
     runs-on: ubuntu-latest
-
+    
+    permissions: read-all|write-all
+    
     env:
       api-key: hePvp4tDl-HP0IBVGI650qHJ0EDCTuGWt49Qcv7yqkwsKpspojKfhSbtkK3eT_xJ
       api-entity-id: 63342ed6951d069cae2a18d9
