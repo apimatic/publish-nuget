@@ -28,7 +28,7 @@ jobs:
         content="${content//$'\r'/'%0D'}"
         echo "::set-output name=packageJson::$content"
     - run: |
-        echo "${{fromJson(steps.set_var.outputs.packageJson).version}}"
+        echo "${{fromJson(steps.set_var.outputs.packageJson)}}"
 
 #     - name: Download Sdk
 #       run: curl -L -X GET "https://www.apimatic.io/api/api-entities/$api-entity-id/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk"
