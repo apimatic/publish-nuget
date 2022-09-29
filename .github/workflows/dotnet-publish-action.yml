@@ -27,7 +27,7 @@ jobs:
       run: ls
 
     - name: Check zip
-      run: cat generation.json
+      run: sudo cat generation.json
 
     - name: Unzip Sdk
       run: unzip dotnet-sdk
