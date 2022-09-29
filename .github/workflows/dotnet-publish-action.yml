@@ -1,5 +1,7 @@
 name: Dotnet Package Publishing
 
+on: workflow_dispatch
+
 jobs:
   dotnet-sdk-publish:
     runs-on: ubuntu-latest
@@ -9,7 +11,7 @@ jobs:
       run: sudo apt-get install jq    
 
     - name: Generate Sdk
-      run: curl -L -X POST "https://www.apimatic.io/api/api-entities/{{Api Entity Id}}/code-generations" -H "Accept: application/json" -H "Authorization: X-Auth-Key {{Api Key}}" -H "Content-Type: application/x-www-form-urlencoded" --data-urlencode "Template=CS_NET_STANDARD_LIB" -o generation.json
+      run: curl -L -X POST "https://www.apimatic.io/api/api-entities/{{Api Entity Id}}/code-generations" -H "Accept:application/json" -H "Authorization:X-Auth-Key {{Api Key}}" -H "Content-Type:application/x-www-form-urlencoded" --data-urlencode "Template=CS_NET_STANDARD_LIB" -o generation.json
 
     - name: Parse Generation Json
       run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
@@ -19,5 +21,3 @@ jobs:
 
     - name: Unzip Sdk
       run: unzip dotnet-sdk.zip -d dotnet-sdk
-
-    
