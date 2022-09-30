@@ -35,5 +35,5 @@ jobs:
       run: dotnet pack $(${{ env.package_directory }}) -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
-      run: dotnet nuget push ${{ env.package_directory }}/output/$(find $(${{ env.package_directory }})/output -name "*.nupkg";)
+      run: dotnet nuget push $(${{ env.package_directory }})/output/$(find $(${{ env.package_directory }})/output -name "*.nupkg";)
            --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
