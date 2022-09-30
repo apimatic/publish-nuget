@@ -37,7 +37,8 @@ jobs:
       run: ls
       
     - name: Enter Project Directory
-      run: cd $(find -name "*Standard*" -type d;)
+      run: find -name "*Standard*" -type d; 
+           cd $(find -name "*Standard*" -type d;)
            
     - name: List Files
       run: ls
