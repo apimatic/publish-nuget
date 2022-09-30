@@ -47,7 +47,6 @@ jobs:
       
     - name: Get Package Name
       run: cd $(find -name "*Standard*" -type d | head -1;); cd output; (find -name "*.nupkg");
-      
     
-#     - name: Push Package
-#       run: dotnet nuget push "output\APIMATICCalculatorStandard.2.1.0.nupkg" --api-key oy2aysgnik5hyq5zqtyq5k6yfowompuujldipfm7tdwpye --source https://api.nuget.org/v3/index.json
+    - name: Push Package
+      run: cd $(find -name "*Standard*" -type d | head -1;); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key oy2aysgnik5hyq5zqtyq5k6yfowompuujldipfm7tdwpye --source https://api.nuget.org/v3/index.json
