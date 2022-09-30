@@ -37,10 +37,10 @@ jobs:
       run: unzip dotnet_sdk
       
     - name: Enter Project Directory
-      run: cd $({{ env.package_directory }});
+      run: cd $(${{ env.package_directory }});
       
     - name: Pack package
-      run: cd $({{ env.package_directory }}); dotnet pack -p:PackageVersion=${{ env.package_version }} -p:Authors="${{ env.authors }}" -p:PackageId="${{ env.package_name }}" -o output
+      run: cd $(${{ env.package_directory }}); dotnet pack -p:PackageVersion=${{ env.package_version }} -p:Authors="${{ env.authors }}" -p:PackageId="${{ env.package_name }}" -o output
     
     - name: Push Package
-      run: cd $({{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+      run: cd $(${{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
