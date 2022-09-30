@@ -12,7 +12,7 @@ jobs:
       nuget_api_key: oy2aysgnik5hyq5zqtyq5k6yfowompuujldipfm7tdwpye 
       authors: piyush
       package_name: mypackage.30.09.2022
-      package_version: "1.0.1"
+      package_version: "1.0.2"
       package_directory: find -name "*Standard*" -type d | head -1;
       
 
