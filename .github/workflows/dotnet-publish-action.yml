@@ -15,7 +15,7 @@ jobs:
       run: sudo apt-get install jq    
 
     - name: generate-sdk
-      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/$api_entity_id/code-generations' -H 'Accept:application/json' -H 'Authorization:X-Auth-Key $api_key' -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
+      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/{{$api_entity_id}}/code-generations' -H 'Accept:application/json' -H 'Authorization:X-Auth-Key {{$api_key}}' -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
       
     - name: apikey
       run: echo $api_key $api_entity_id
