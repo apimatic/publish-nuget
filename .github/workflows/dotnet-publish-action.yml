@@ -32,16 +32,22 @@ jobs:
       run: unzip dotnet_sdk
       
     - name: Get Current Version of Package
-      id: current_package_version
       run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ secrets.PACKAGE_NAME }}/index.json" -o version.json
       
     - name: Parse Version Json
-      run: jq -r '.versions[-1]' version.json
+      id: current_package_version
+      run: echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json)
+      
+    - name: Bump Package version
+      id: bump_version
+      uses: christian-draeger/increment-semantic-version@1.0.2
+      with:
+        current-version: ${{ steps.current_package_version.outputs.packageVersion }}
+        version-fragment: 'bug'
       
     - name: Pack package
-      run: dotnet pack $(${{ env.package_directory }}) -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
-    
-    - run: ls
+      run: dotnet pack $(${{ env.package_directory }}) -p:PackageVersion=${{ steps.bump_version.outputs.next-version }}
+           -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
       run: dotnet nuget push /output/$(find ./output -name "{{ secrets.PACKAGE_NAME }}*.nupkg" | head -1)
