@@ -37,7 +37,11 @@ jobs:
       run: ls
       
     - name: Enter Project Directory
-      run: cd *.Standard
+      run: files(*.Standard)
+           cd "$files[0]"
+           
+    - name: List Files
+      run: ls
       
     - name: Pack package
       run: dotnet pack -p:PackageVersion=2.1.0 -p:Authors="mel" -p:PackageId="adadad" -o output
