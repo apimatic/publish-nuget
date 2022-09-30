@@ -38,22 +38,16 @@ jobs:
       
     - name: Enter Project Directory
       run: cd $(find -name "*Standard*" -type d | head -1;); ls
-           
-    - name: List Files
-      run: ls
       
     - name: Pack package
-      run: dotnet pack -p:PackageVersion=2.1.0 -p:Authors="mel" -p:PackageId="adadad" -o output
+      run: cd $(find -name "*Standard*" -type d | head -1;); dotnet pack -p:PackageVersion=2.1.0 -p:Authors="mel" -p:PackageId="adadad" -o output
 
     - name: Enter Package Directory
-      run: cd output
-    
-    - name: List files
-      run: ls
+      run: cd $(find -name "*Standard*" -type d | head -1;); cd output; ls
       
-    - name: Get Package Name
-      run: files(*.nupkg)
-           echo "$files[0]"
+#     - name: Get Package Name
+#       run: files(*.nupkg)
+#            echo "$files[0]"
       
     
 #     - name: Push Package
