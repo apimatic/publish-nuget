@@ -7,12 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      api_key: hePvp4tDl-HP0IBVGI650qHJ0EDCTuGWt49Qcv7yqkwsKpspojKfhSbtkK3eT_xJ
       api_entity_id: 63342ed6951d069cae2a18d9
-      nuget_api_key: oy2aysgnik5hyq5zqtyq5k6yfowompuujldipfm7tdwpye 
       authors: piyush
       package_name: mypackage.30.09.2022
-      package_version: "1.0.2"
+      package_version: "1.0.3"
       package_directory: find -name "*Standard*" -type d | head -1;
       
 
@@ -21,7 +19,7 @@ jobs:
       run: sudo apt-get install jq    
 
     - name: Generate Sdk
-      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ env.api_entity_id }}/code-generations' -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ env.api_key }}' -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
+      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ env.api_entity_id }}/code-generations' -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ secrets.API_KEY }}' -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
       
     - name: Apikey
       run: echo $api_key $api_entity_id
@@ -43,4 +41,4 @@ jobs:
       run: cd $(${{ env.package_directory }}); dotnet pack -p:PackageVersion=${{ env.package_version }} -p:Authors="${{ env.authors }}" -p:PackageId="${{ env.package_name }}" -o output
     
     - name: Push Package
-      run: cd $(${{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+      run: cd $(${{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
