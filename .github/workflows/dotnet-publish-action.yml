@@ -38,7 +38,7 @@ jobs:
       
     - name: Enter Project Directory
       run: echo '::set-output name=files::'find -name "*c*" -type d
-           cd "$files[0]"
+           echo "$files[0]"
            
     - name: List Files
       run: ls
