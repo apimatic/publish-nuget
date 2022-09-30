@@ -36,3 +36,22 @@ jobs:
     - name: List files
       run: ls
       
+    - name: Enter Project Directory
+      run: cd *.Standard
+      
+    - name: Pack package
+      run: dotnet pack -p:PackageVersion=2.1.0 -p:Authors="mel" -p:PackageId="adadad" -o output
+
+    - name: Enter Package Directory
+      run: cd output
+    
+    - name: List files
+      run: ls
+      
+    - name: Get Package Name
+      run: files(*.nupkg)
+           echo "$files[0]"
+      
+    
+#     - name: Push Package
+#       run: dotnet nuget push "output\APIMATICCalculatorStandard.2.1.0.nupkg" --api-key oy2aysgnik5hyq5zqtyq5k6yfowompuujldipfm7tdwpye --source https://api.nuget.org/v3/index.json
