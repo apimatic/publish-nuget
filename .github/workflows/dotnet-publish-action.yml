@@ -27,11 +27,8 @@ jobs:
     - name: Unzip Sdk
       run: unzip dotnet_sdk
       
-    - name: Enter Project Directory
-      run: cd $(${{ env.package_directory }});
-      
     - name: Pack package
-      run: cd $(${{ env.package_directory }}); dotnet pack -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
+      run: dotnet pack ${{ env.package_directory }} -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
-      run: cd $(${{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push "${{ env.package_directory }}/output/$(find -name "*.nupkg";)" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
