@@ -37,5 +37,5 @@ jobs:
     - run: ls
     
     - name: Push Package
-      run: dotnet nuget push /output/$(find /output -name "{{ secrets.PACKAGE_NAME }}*.nupkg" | head -1)
+      run: dotnet nuget push /output/$(find ./output -name "{{ secrets.PACKAGE_NAME }}*.nupkg" | head -1)
            --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
