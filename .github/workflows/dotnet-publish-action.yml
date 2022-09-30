@@ -7,10 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      api_entity_id: 63342ed6951d069cae2a18d9
-      authors: piyush
-      package_name: mypackage.30.09.2022
-      package_version: "1.0.3"
       package_directory: find -name "*Standard*" -type d | head -1;
       
 
@@ -19,17 +15,14 @@ jobs:
       run: sudo apt-get install jq    
 
     - name: Generate Sdk
-      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ env.api_entity_id }}/code-generations' -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ secrets.API_KEY }}' -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
-      
-    - name: Apikey
-      run: echo $api_key $api_entity_id
+      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations' -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}' -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
       
     - name: Parse Generation Json
       id: parse_generation_json
       run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
 
     - name: Download Sdk
-      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/${{ env.api_entity_id }}/code-generations/${{ steps.parse_generation_json.outputs.codegenId }}/generated-sdk" -o dotnet_sdk.zip 
+      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations/${{ steps.parse_generation_json.outputs.codegenId }}/generated-sdk" -o dotnet_sdk.zip 
 
     - name: Unzip Sdk
       run: unzip dotnet_sdk
@@ -38,7 +31,7 @@ jobs:
       run: cd $(${{ env.package_directory }});
       
     - name: Pack package
-      run: cd $(${{ env.package_directory }}); dotnet pack -p:PackageVersion=${{ env.package_version }} -p:Authors="${{ env.authors }}" -p:PackageId="${{ env.package_name }}" -o output
+      run: cd $(${{ env.package_directory }}); dotnet pack -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
       run: cd $(${{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
