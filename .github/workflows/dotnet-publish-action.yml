@@ -24,7 +24,7 @@ jobs:
       run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
 
     - name: Download Sdk
-      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/${{ api_entity_id }}/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk" -o dotnet_sdk.zip 
+      run: curl -L -X GET "https://www.apimatic.io/api/api-entities/${{ env.api_entity_id }}/code-generations/${{ steps.parse-generation-json.outputs.codegenId }}/generated-sdk" -o dotnet_sdk.zip 
     
     - name: List files
       run: ls
