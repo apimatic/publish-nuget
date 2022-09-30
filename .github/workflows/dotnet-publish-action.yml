@@ -12,7 +12,9 @@ jobs:
       nuget_api_key: oy2aysgnik5hyq5zqtyq5k6yfowompuujldipfm7tdwpye 
       authors: piyush
       package_name: mypackage.30.09.2022
-      package_version: "1.0.0"
+      package_version: "1.0.1"
+      package_directory: find -name "*Standard*" -type d | head -1;
+      
 
     steps:
     - name: Install Jq
@@ -30,27 +32,15 @@ jobs:
 
     - name: Download Sdk
       run: curl -L -X GET "https://www.apimatic.io/api/api-entities/${{ env.api_entity_id }}/code-generations/${{ steps.parse_generation_json.outputs.codegenId }}/generated-sdk" -o dotnet_sdk.zip 
-    
-    - name: List files
-      run: ls
 
     - name: Unzip Sdk
       run: unzip dotnet_sdk
       
-    - name: List files
-      run: ls
-      
     - name: Enter Project Directory
-      run: cd $(find -name "*Standard*" -type d | head -1;); ls
+      run: cd $({{ env.package_directory }});
       
     - name: Pack package
-      run: cd $(find -name "*Standard*" -type d | head -1;); dotnet pack -p:PackageVersion=${{ env.package_version }} -p:Authors="${{ env.authors }}" -p:PackageId="${{ env.package_name }}" -o output
-
-    - name: Enter Package Directory
-      run: cd $(find -name "*Standard*" -type d | head -1;); cd output; ls
-      
-    - name: Get Package Name
-      run: cd $(find -name "*Standard*" -type d | head -1;); cd output; (find -name "*.nupkg");
+      run: cd $({{ env.package_directory }}); dotnet pack -p:PackageVersion=${{ env.package_version }} -p:Authors="${{ env.authors }}" -p:PackageId="${{ env.package_name }}" -o output
     
     - name: Push Package
-      run: cd $(find -name "*Standard*" -type d | head -1;); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
+      run: cd $({{ env.package_directory }}); cd output; dotnet nuget push "$(find -name "*.nupkg";)" --api-key ${{ env.nuget_api_key }} --source https://api.nuget.org/v3/index.json
