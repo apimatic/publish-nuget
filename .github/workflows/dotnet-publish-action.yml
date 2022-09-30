@@ -45,9 +45,8 @@ jobs:
     - name: Enter Package Directory
       run: cd $(find -name "*Standard*" -type d | head -1;); cd output; ls
       
-#     - name: Get Package Name
-#       run: files(*.nupkg)
-#            echo "$files[0]"
+    - name: Get Package Name
+      run: cd $(find -name "*Standard*" -type d | head -1;); cd output; (find -name "*.nupkg");
       
     
 #     - name: Push Package
