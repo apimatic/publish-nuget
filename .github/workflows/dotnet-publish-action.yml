@@ -3,38 +3,42 @@ name: Dotnet Package Publishing
 on: workflow_dispatch
 
 jobs:
-  DotnetSdkPublish:
+
+  GetSdk:
     runs-on: ubuntu-latest
     
-    env:
-      package_directory: find -name "*Standard*" -type d | head -1;
-      
-
     steps:
     - name: Install Jq
-      run: sudo apt-get install jq    
-
+      run: sudo apt-get install jq 
+      
     - name: Generate Sdk
       run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations'
            -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}'
            -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
       
-    - name: Parse Generation Json
-      id: parse_generation_json
+    - name: Set Codegen ID
+      id: set_codegen_id
       run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
 
     - name: Download Sdk
       run: curl -L -X GET 
-           "https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations/${{ steps.parse_generation_json.outputs.codegenId }}/generated-sdk"
+           "https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations/${{ steps.set_codegen_id.outputs.codegenId }}/generated-sdk"
            -o dotnet_sdk.zip
 
     - name: Unzip Sdk
       run: unzip dotnet_sdk
       
+  GenerateVersion: 
+    runs-on: ubuntu-latest
+    
+    outputs: 
+      next-version: ${{ steps.bump_version.outputs.next-version }}
+    
+    steps:
     - name: Get Current Version of Package
       run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ secrets.PACKAGE_NAME }}/index.json" -o version.json
       
-    - name: Parse Version Json
+    - name: Set Current Version of Package
       id: current_package_version
       run: if ("true" && $(cat version.json | jq 'has("versions")'));
            then echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json);
@@ -47,9 +51,18 @@ jobs:
       with:
         current-version: ${{ steps.current_package_version.outputs.packageVersion }}
         version-fragment: 'bug'
+
+  DotnetSdkPublish:
+    runs-on: ubuntu-latest
+    
+    needs: [GenerateVersion, GetSdk]
+      
+    steps:
+    - name: Install Jq
+      run: sudo apt-get install jq    
       
     - name: Pack package
-      run: dotnet pack $(${{ env.package_directory }}) -p:PackageVersion=${{ steps.bump_version.outputs.next-version }}
+      run: dotnet pack $(${{ env.package_directory }}) -p:PackageVersion=${{ needs.GenerateVersion.outputs.next-version }}
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
