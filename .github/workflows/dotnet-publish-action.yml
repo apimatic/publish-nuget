@@ -39,6 +39,7 @@ jobs:
       run: if [cat version.json | jq 'has("error")']
            then echo '::set-output name=packageVersion::'1.0.0
            else echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json)
+           fi
            
     - name: Bump Package version
       id: bump_version
