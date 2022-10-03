@@ -34,6 +34,10 @@ jobs:
     - name: Get Current Version of Package
       run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ secrets.PACKAGE_NAME }}/index.json" -o version.json
       
+    - name: If condition Check
+      if: jq 'has("error")'
+      run: echo "has an error"
+      
     - name: Parse Version Json
       id: current_package_version
       run: echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json)
