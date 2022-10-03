@@ -18,9 +18,7 @@ jobs:
       
     - name: Set Current Version of Package
       id: current_package_version
-      run: if ("true" && ${{ env.NEW_PACKAGE_VERSION != '' }});
-           then echo '::set-output name=packageVersion::'${{ env.NEW_PACKAGE_VERSION }};
-           elif ("true" && $(cat version.json | jq 'has("versions")'));
+      run: if ("true" && $(cat version.json | jq 'has("versions")'));
            then echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json);
            else echo '::set-output name=packageVersion::'1.0.0;
            fi;
