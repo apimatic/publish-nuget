@@ -36,7 +36,7 @@ jobs:
       
     - name: Parse Version Json
       id: current_package_version
-      run: if (cat version.json | jq has('error'))
+      run: if(cat version.json | jq has('error'))
            then echo '::set-output name=packageVersion::'1.0.0
            else echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json)
            
