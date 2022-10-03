@@ -14,7 +14,7 @@ jobs:
     
     steps:
     - name: Get Current Version of Package
-      run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ env.PACKAGE_NAME }}/index.json" -o version.json
+      run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ secrets.PACKAGE_NAME }}/index.json" -o version.json
       
     - name: Set Current Version of Package
       id: current_package_version
