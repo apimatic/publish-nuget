@@ -37,6 +37,9 @@ jobs:
            then echo '::set-output name=next-version::'${{ steps.bump_version.outputs.next-version }};
            else echo '::set-output name=next-version::'${{ env.NEW_PACKAGE_VERSION }};
            fi;
+           
+    - name: Test
+      run: echo ${{ steps.next_version.outputs.next-version }}
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
