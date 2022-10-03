@@ -32,13 +32,6 @@ jobs:
       with:
         current-version: ${{ steps.current_package_version.outputs.packageVersion }}
         version-fragment: 'bug'
-        
-    - name: Set New Version
-      if: ${{ env.NEW_PACKAGE_VERSION == '' }}
-      run: echo "NEW_PACKAGE_VERSION=${{ steps.bump_version.outputs.next-version }}" >> $GITHUB_ENV
-      
-    - name: Test
-      run: echo ${{ env.NEW_PACKAGE_VERSION }}
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
@@ -71,7 +64,7 @@ jobs:
         
     - name: Pack package
       run: dotnet pack $(${{ env.package_directory }}) 
-           -p:PackageVersion=${{ env.NEW_PACKAGE_VERSION }}
+           -p:PackageVersion=${{ env.NEW_PACKAGE_VERSION }} ${{GenerateVersion.outputs.next-version}}
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
