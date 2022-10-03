@@ -30,6 +30,9 @@ jobs:
   DotnetSdkPublish:
     runs-on: ubuntu-latest
     
+    env:
+      package_directory: find -name "*Standard*" -type d | head -1;
+    
     needs: [GenerateVersion]
       
     steps:
