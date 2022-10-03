@@ -6,17 +6,20 @@ jobs:
   GenerateVersion: 
     runs-on: ubuntu-latest
     
+    env:
+     PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
+    
     outputs: 
       next-version: ${{ steps.bump_version.outputs.next-version }}
     
     steps:
     - name: Get Current Version of Package
-      run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ secrets.PACKAGE_NAME }}/index.json" -o version.json
+      run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ env.PACKAGE_NAME }}/index.json" -o version.json
       
     - name: Set Current Version of Package
       id: current_package_version
-      run: if ("true" && ${{ secrets.PACKAGE_VERSION != '' }});
-           then echo '::set-output name=packageVersion::'${{ secrets.PACKAGE_VERSION }};
+      run: if ("true" && ${{ env.PACKAGE_VERSION != '' }});
+           then echo '::set-output name=packageVersion::'${{ env.PACKAGE_VERSION }};
            elif ("true" && $(cat version.json | jq 'has("versions")'));
            then echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json);
            else echo '::set-output name=packageVersion::'1.0.0;
@@ -24,7 +27,7 @@ jobs:
            
     - name: Bump Package version
       id: bump_version
-      if: ${{ secrets.PACKAGE_VERSION == '' }}
+      if: ${{ env.PACKAGE_VERSION == '' }}
       uses: christian-draeger/increment-semantic-version@1.0.2
       with:
         current-version: ${{ steps.current_package_version.outputs.packageVersion }}
