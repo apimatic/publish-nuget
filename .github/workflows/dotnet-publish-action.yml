@@ -63,7 +63,8 @@ jobs:
       run: unzip dotnet_sdk
         
     - name: Pack package
-      run: dotnet pack $(${{ env.package_directory }}) -p:PackageVersion=${{ needs.GenerateVersion.outputs.next-version }}
+      run: dotnet pack $(${{ env.package_directory }}) 
+           -p:PackageVersion=$([-z "${{ needs.GenerateVersion.outputs.next-version }}"] && ${{ steps.current_package_version.outputs.packageVersion }}) 
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
