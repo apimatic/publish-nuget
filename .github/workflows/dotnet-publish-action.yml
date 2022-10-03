@@ -36,6 +36,9 @@ jobs:
     - name: Set New Version
       if: ${{ env.NEW_PACKAGE_VERSION == '' }}
       run: echo "NEW_PACKAGE_VERSION=${{ steps.bump_version.outputs.next-version }}" >> $GITHUB_ENV
+      
+    - name: Test
+      run: echo $NEW_PACKAGE_VERSION
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
