@@ -2,12 +2,12 @@ name: Dotnet Package Publishing
 
 on: workflow_dispatch
 
+env:
+ PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
+
 jobs: 
   GenerateVersion: 
     runs-on: ubuntu-latest
-    
-    env:
-     PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
     
     outputs: 
       next-version: ${{ steps.bump_version.outputs.next-version }}
