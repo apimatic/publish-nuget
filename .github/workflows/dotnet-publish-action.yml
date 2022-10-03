@@ -3,7 +3,7 @@ name: Dotnet Package Publishing
 on: workflow_dispatch
 
 env:
- PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
+ NEW_PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
 
 jobs: 
   GenerateVersion: 
@@ -18,8 +18,8 @@ jobs:
       
     - name: Set Current Version of Package
       id: current_package_version
-      run: if ("true" && ${{ env.PACKAGE_VERSION != '' }});
-           then echo '::set-output name=packageVersion::'${{ env.PACKAGE_VERSION }};
+      run: if ("true" && ${{ env.NEW_PACKAGE_VERSION != '' }});
+           then echo '::set-output name=packageVersion::'${{ env.NEW_PACKAGE_VERSION }};
            elif ("true" && $(cat version.json | jq 'has("versions")'));
            then echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json);
            else echo '::set-output name=packageVersion::'1.0.0;
@@ -27,15 +27,15 @@ jobs:
            
     - name: Bump Package version
       id: bump_version
-      if: ${{ env.PACKAGE_VERSION == '' }}
+      if: ${{ env.NEW_PACKAGE_VERSION == '' }}
       uses: christian-draeger/increment-semantic-version@1.0.2
       with:
         current-version: ${{ steps.current_package_version.outputs.packageVersion }}
         version-fragment: 'bug'
         
     - name: Set New Version
-      if: ${{ env.PACKAGE_VERSION == '' }}
-      run: echo "PACKAGE_VERSION=${{ steps.bump_version.outputs.next-version }}" >> $GITHUB_ENV
+      if: ${{ env.NEW_PACKAGE_VERSION == '' }}
+      run: echo "NEW_PACKAGE_VERSION=${{ steps.bump_version.outputs.next-version }}" >> $GITHUB_ENV
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
         
     - name: Pack package
       run: dotnet pack $(${{ env.package_directory }}) 
-           -p:PackageVersion=${{ env.PACKAGE_VERSION }}
+           -p:PackageVersion=${{ env.NEW_PACKAGE_VERSION }}
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
