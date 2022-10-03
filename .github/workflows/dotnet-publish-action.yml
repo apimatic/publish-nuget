@@ -2,32 +2,7 @@ name: Dotnet Package Publishing
 
 on: workflow_dispatch
 
-jobs:
-
-  GetSdk:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Install Jq
-      run: sudo apt-get install jq 
-      
-    - name: Generate Sdk
-      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations'
-           -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}'
-           -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
-      
-    - name: Set Codegen ID
-      id: set_codegen_id
-      run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
-
-    - name: Download Sdk
-      run: curl -L -X GET 
-           "https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations/${{ steps.set_codegen_id.outputs.codegenId }}/generated-sdk"
-           -o dotnet_sdk.zip
-
-    - name: Unzip Sdk
-      run: unzip dotnet_sdk
-      
+jobs: 
   GenerateVersion: 
     runs-on: ubuntu-latest
     
@@ -55,12 +30,29 @@ jobs:
   DotnetSdkPublish:
     runs-on: ubuntu-latest
     
-    needs: [GenerateVersion, GetSdk]
+    needs: [GenerateVersion]
       
     steps:
     - name: Install Jq
-      run: sudo apt-get install jq    
+      run: sudo apt-get install jq   
       
+    - name: Generate Sdk
+      run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations'
+           -H 'Accept:application/json' -H 'Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}'
+           -H 'Content-Type:application/x-www-form-urlencoded' --data-urlencode 'Template=CS_NET_STANDARD_LIB' -o generation.json
+      
+    - name: Set Codegen ID
+      id: set_codegen_id
+      run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
+
+    - name: Download Sdk
+      run: curl -L -X GET 
+           "https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations/${{ steps.set_codegen_id.outputs.codegenId }}/generated-sdk"
+           -o dotnet_sdk.zip
+
+    - name: Unzip Sdk
+      run: unzip dotnet_sdk
+        
     - name: Pack package
       run: dotnet pack $(${{ env.package_directory }}) -p:PackageVersion=${{ needs.GenerateVersion.outputs.next-version }}
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
