@@ -36,10 +36,10 @@ jobs:
       
     - name: Parse Version Json
       id: current_package_version
-      run: echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json)
-           || echo '::set-output name=packageVersion::'1.0.0
+      run: if (cat version.json | jq has('error'))
+           then echo '::set-output name=packageVersion::'1.0.0
+           else echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json)
            
-          
     - name: Bump Package version
       id: bump_version
       uses: christian-draeger/increment-semantic-version@1.0.2
