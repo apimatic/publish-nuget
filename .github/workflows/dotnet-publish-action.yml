@@ -24,6 +24,7 @@ jobs:
            
     - name: Bump Package version
       id: bump_version
+      if: ${{ secrets.PACKAGE_VERSION == '' }}
       uses: christian-draeger/increment-semantic-version@1.0.2
       with:
         current-version: ${{ steps.current_package_version.outputs.packageVersion }}
