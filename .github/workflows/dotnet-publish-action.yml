@@ -36,6 +36,7 @@ jobs:
       run: if ("true" && ${{ env.NEW_PACKAGE_VERSION == '' }};
            then echo '::set-output name=next-version::'${{ steps.bump_version.outputs.next-version }};
            else echo '::set-output name=packageVersion::'${{ env.NEW_PACKAGE_VERSION }};
+           fi;
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
