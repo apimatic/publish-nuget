@@ -44,6 +44,7 @@ jobs:
       run: sudo apt-get install jq   
       
     - name: Retrieve Version
+      id: new_package_version
       run: if ["${{ needs.GenerateVersion.outputs.next-version }}" != ""];
            then echo '::set-output name=newPackageVersion::'${{ needs.GenerateVersion.outputs.next-version }};
            else echo '::set-output name=newPackageVersion::'${{ env.NEW_PACKAGE_VERSION }};
@@ -68,7 +69,7 @@ jobs:
         
     - name: Pack package
       run: dotnet pack $(${{ env.package_directory }}) 
-           -p:PackageVersion=$(
+           -p:PackageVersion=${{ steps.new_package_version.outputs.next-version }}
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
