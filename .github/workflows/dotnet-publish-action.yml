@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     outputs: 
-      next-version: ${{ steps.next_version.outputs.next-version }}
+      next-version: ${{ steps.bump_version.outputs.next-version }}
     
     steps:
     - name: Get Current Version of Package
@@ -30,13 +30,6 @@ jobs:
       with:
         current-version: ${{ steps.current_package_version.outputs.packageVersion }}
         version-fragment: 'bug'
-        
-    - name: Set Next Version
-      id: next_version
-      run: if ("true" && ${{ env.NEW_PACKAGE_VERSION == '' }});
-           then echo '::set-output name=next-version::'${{ steps.bump_version.outputs.next-version }};
-           else echo '::set-output name=next-version::'${{ env.NEW_PACKAGE_VERSION }};
-           fi;
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
@@ -69,7 +62,10 @@ jobs:
         
     - name: Pack package
       run: dotnet pack $(${{ env.package_directory }}) 
-           -p:PackageVersion=${{ needs.GenerateVersion.outputs.next-version }}${{ env.NEW_PACKAGE_VERSION }}
+           -p:PackageVersion=$(if ${{ needs.GenerateVersion.outputs.next-version }} != "";
+                               then echo ${{ needs.GenerateVersion.outputs.next-version }};
+                               else echo ${{ env.NEW_PACKAGE_VERSION }};
+                               fi;
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
