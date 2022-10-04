@@ -44,7 +44,7 @@ jobs:
       run: sudo apt-get install jq   
       
     - name: Retrieve Version
-      run: if "${{ needs.GenerateVersion.outputs.next-version }}" != "";
+      run: if ["${{ needs.GenerateVersion.outputs.next-version }}" != ""];
            then echo '::set-output name=newPackageVersion::'${{ needs.GenerateVersion.outputs.next-version }};
            else echo '::set-output name=newPackageVersion::'${{ env.NEW_PACKAGE_VERSION }};
            fi;
