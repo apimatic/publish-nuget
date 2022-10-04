@@ -37,9 +37,6 @@ jobs:
            then echo '::set-output name=next-version::'${{ steps.bump_version.outputs.next-version }};
            else echo '::set-output name=next-version::'${{ env.NEW_PACKAGE_VERSION }};
            fi;
-           
-    - name: Test
-      run: echo ${{ steps.next_version.outputs.next-version }}
 
   DotnetSdkPublish:
     runs-on: ubuntu-latest
@@ -72,7 +69,7 @@ jobs:
         
     - name: Pack package
       run: dotnet pack $(${{ env.package_directory }}) 
-           -p:PackageVersion=$(${{ needs.GenerateVersion.outputs.next-version }})
+           -p:PackageVersion=${{ needs.GenerateVersion.outputs.next-version }}${{ env.NEW_PACKAGE_VERSION }}
            -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
     
     - name: Push Package
