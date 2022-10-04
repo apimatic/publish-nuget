@@ -49,9 +49,6 @@ jobs:
            then echo '::set-output name=newPackageVersion::'${{ env.NEW_PACKAGE_VERSION }};
            else echo '::set-output name=newPackageVersion::'${{ needs.GenerateVersion.outputs.next-version }};
            fi;
-           
-    - name: Test
-      run: echo ${{ steps.new_package_version.outputs.newPackageVersion }}
       
     - name: Generate Sdk
       run: curl -v -X POST 'https://www.apimatic.io/api/api-entities/${{ secrets.API_ENTITY_ID }}/code-generations'
