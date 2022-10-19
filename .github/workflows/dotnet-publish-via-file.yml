@@ -57,7 +57,8 @@ jobs:
     - name: Zip API spec
       working-directory: 'spec'
       run: zip -qq -r api-spec.zip .
-      
+      # APIMatic allows multiple spec files as well as configuration files to be passed to the API, therefore, we need to zip the contents of this directory
+
     - name: Generate SDK
       working-directory: 'spec'
       run: curl -v -X POST --url "https://www.apimatic.io/api/code-generations/generate-via-file" --header  "Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}" --header "Accept:application/json" --header "content-type:multipart/form-data"  --form "file=@api-spec.zip"  --form "template=CS_NET_STANDARD_LIB" -o generation.json
