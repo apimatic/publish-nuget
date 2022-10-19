@@ -1,0 +1,88 @@
+name: SDK Publishing via file
+
+on: workflow_dispatch
+
+env:
+ NEW_PACKAGE_VERSION: ${{ secrets.PACKAGE_VERSION }}
+
+jobs: 
+  GenerateVersion: 
+    runs-on: ubuntu-latest
+    
+    outputs: 
+      next-version: ${{ steps.bump_version.outputs.next-version }}
+    
+    steps:
+    - name: Get Current Version of Package
+      run: curl -L -X GET "https://api.nuget.org/v3-flatcontainer/${{ secrets.PACKAGE_NAME }}/index.json" -o version.json
+      
+    - name: Set Current Version of Package
+      id: current_package_version
+      run: if ("true" && $(cat version.json | jq 'has("versions")'));
+           then echo '::set-output name=packageVersion::'$(jq -r '.versions[-1]' version.json);
+           else echo '::set-output name=packageVersion::'1.0.0;
+           fi;
+           
+    - name: Bump Package version
+      id: bump_version
+      if: ${{ env.NEW_PACKAGE_VERSION == '' }}
+      uses: christian-draeger/increment-semantic-version@1.0.2
+      with:
+        current-version: ${{ steps.current_package_version.outputs.packageVersion }}
+        version-fragment: 'bug'
+
+  DotnetSdkPublish:
+    runs-on: ubuntu-latest
+    
+    env:
+      package_directory: find -name "*Standard*" -type d | head -1;
+    
+    needs: [GenerateVersion]
+      
+    steps:
+    - name: Install Jq
+      run: sudo apt-get install jq   
+      
+    - name: Retrieve Version
+      id: new_package_version
+      run: if [ -z "${{ needs.GenerateVersion.outputs.next-version }}"];
+           then echo '::set-output name=newPackageVersion::'${{ env.NEW_PACKAGE_VERSION }};
+           else echo '::set-output name=newPackageVersion::'${{ needs.GenerateVersion.outputs.next-version }};
+           fi;
+     
+    - uses: actions/checkout@v2
+      name : checkout-repo
+      id: checkout-repo
+       
+    - name: Zip API spec
+      working-directory: 'spec'
+      run: zip -qq -r api-spec.zip .
+      
+    - name: Generate SDK
+      working-directory: 'spec'
+      run: curl -v -X POST --url "https://www.apimatic.io/api/code-generations/generate-via-file" --header  "Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}" --header "Accept:application/json" --header "content-type:multipart/form-data"  --form "file=@api-spec.zip"  --form "template=CS_NET_STANDARD_LIB" -o generation.json
+
+   
+    - name: Set Codegen ID
+      id: set_codegen_id
+      working-directory: 'spec'
+      run: echo '::set-output name=codegenId::'$(jq -r '.id' generation.json)
+
+    - name: Download Sdk
+      working-directory: 'spec'
+      run: curl -X GET --url "https://www.apimatic.io/api/code-generations/${{ steps.set_codegen_id.outputs.codegenId }}/generated-sdk" --header "Authorization:X-Auth-Key ${{ secrets.APIMATIC_API_KEY }}" -o dotnet_sdk.zip
+
+    - name: Unzip Sdk
+      working-directory: 'spec'
+      run: unzip dotnet_sdk
+        
+    - name: Pack package
+      working-directory: 'spec'
+      run: dotnet pack $(${{ env.package_directory }}) 
+           -p:PackageVersion=${{ steps.new_package_version.outputs.newPackageVersion }}
+           -p:PackageId="${{ secrets.PACKAGE_NAME }}" -o output
+    
+    - name: Push Package
+      working-directory: 'spec'
+      run: dotnet nuget push ./output/$(find -name "{{ secrets.PACKAGE_NAME }}*.nupkg" | head -1)
+           --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
